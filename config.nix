@@ -56,7 +56,7 @@ let
             \   'typescript': es_linters,
             \   'nix': ['nixpkgs-fmt']
             \}
-        let g:ale_fixes = {'javascript': ['eslint']}
+        let g:ale_fixers = {'javascript': ['eslint']}
         let g:ale_fix_on_save = 1
         nnoremap K :ALEHover<CR>
         nnoremap gd :ALEGoToDefinition<CR>
