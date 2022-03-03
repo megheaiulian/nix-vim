@@ -1,4 +1,4 @@
-{ vimPlugins, nixpkgs-fmt, ag, ripgrep }:
+{ vimPlugins, nixpkgs-fmt, silver-searcher, ripgrep }:
 let
   customRC = ''
     set encoding=utf-8
@@ -74,7 +74,7 @@ let
         nnoremap <c-p> :Files<cr>
         nnoremap <bs> :Buffers<cr>
       '';
-      path = [ ag ripgrep ];
+      path = [ silver-searcher ripgrep ];
     }
     {
       start = commentary;
