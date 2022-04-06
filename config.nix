@@ -92,7 +92,7 @@ let
       '';
     }
     {
-      start = moonlight-nvim;
+      start = pure-lua;
       config = ''
         colorscheme moonlight
       '';
