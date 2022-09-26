@@ -84,6 +84,7 @@ let
       config = ''
         lua << EOF
         require'nvim-treesitter.configs'.setup {
+          parser_install_dir = "~/.local/share/nvim/site",
           ensure_installed = { 'javascript', 'typescript', 'jsdoc', 'json', 'html', 'css', 'bash', 'lua', 'nix'},
           highlight = {enable = true, additional_vim_regex_highlighting = false},
           indent = {enable = true}
