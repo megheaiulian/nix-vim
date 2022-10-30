@@ -93,9 +93,9 @@ let
       '';
     }
     {
-      start = pure-lua;
+      start = kanagawa-nvim;
       config = ''
-        colorscheme moonlight
+        colorscheme kanagawa
       '';
     }
     { opt = vim-jinja; 
