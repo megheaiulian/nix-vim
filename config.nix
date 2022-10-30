@@ -101,6 +101,14 @@ let
         colorscheme kanagawa
       '';
     }
+    {
+      opt = gitsigns-nvim;
+      config = ''
+        lua << EOF
+          require('gitsigns').setup()
+        EOF
+      '';
+    }
   ];
 in
 { inherit customRC plugins; }
