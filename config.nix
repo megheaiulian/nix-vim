@@ -102,7 +102,7 @@ let
       '';
     }
     {
-      opt = gitsigns-nvim;
+      start = gitsigns-nvim;
       config = ''
         lua << EOF
           require('gitsigns').setup()
