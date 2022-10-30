@@ -98,6 +98,7 @@ let
         colorscheme moonlight
       '';
     }
+    { start = vim-jinja}
   ];
 in
 { inherit customRC plugins; }
