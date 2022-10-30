@@ -35,6 +35,9 @@ let
 
     " statusline
     set statusline=%<%f\ %h%#error#%m%*%r%=%-14.(%l\:%c%)%{&filetype}
+
+    " njk support
+    au BufNewFile,BufRead *.njk set ft=html
   '';
   plugins = with vimPlugins; [
     {
@@ -96,11 +99,6 @@ let
       start = kanagawa-nvim;
       config = ''
         colorscheme kanagawa
-      '';
-    }
-    { opt = vim-jinja; 
-      config = ''
-          au BufNewFile,BufRead *.njk set ft=jinja
       '';
     }
   ];
