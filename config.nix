@@ -98,7 +98,11 @@ let
         colorscheme moonlight
       '';
     }
-    { start = vim-jinja; }
+    { opt = vim-jinja; 
+      config = ''
+          au BufNewFile,BufRead *.njk set ft=jinja
+      '';
+    }
   ];
 in
 { inherit customRC plugins; }
