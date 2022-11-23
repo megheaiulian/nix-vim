@@ -1,4 +1,4 @@
-{ vimPlugins, nixpkgs-fmt, silver-searcher, ripgrep }:
+{ vimPlugins, nixpkgs-fmt, silver-searcher, ripgrep, nodePackages }:
 let
   customRC = ''
     set encoding=utf-8
@@ -224,6 +224,9 @@ let
 
         EOF
       '';
+      path = [
+        nodePackages.typescript-language-server
+      ];
     }
     {
       start = [ nvim-cmp cmp-buffer cmp-path cmp-nvim-lsp ];
