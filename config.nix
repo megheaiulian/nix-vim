@@ -121,10 +121,13 @@ let
           filetype = {
             javascript = { prettier },
             typescript = { prettier },
+            css = {prettier},
             nix = { nix }
           }
         }
         EOF
+        nnoremap <silent> <leader>f :Format<CR>
+        nnoremap <silent> <leader>F :FormatWrite<CR>
       '';
       path = [ nixpkgs-fmt ];
     }
