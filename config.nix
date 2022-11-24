@@ -121,7 +121,8 @@ let
           filetype = {
             javascript = { prettier },
             typescript = { prettier },
-            css = {prettier},
+            css = { prettier },
+            json = { prettier },
             nix = { nix }
           }
         }
