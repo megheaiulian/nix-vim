@@ -70,7 +70,9 @@ let
         lua << EOF
         require'nvim-treesitter.configs'.setup {
           parser_install_dir = "~/.local/share/nvim/site",
-          ensure_installed = { 'javascript', 'typescript', 'jsdoc', 'json', 'html', 'css', 'bash', 'lua', 'nix'},
+          ensure_installed = { 
+            'javascript', 'typescript', 'jsdoc', 'json', 'html', 'css', 'bash', 'lua', 'nix', 'rust', 'toml'
+          },
           highlight = {enable = true, additional_vim_regex_highlighting = false},
           indent = {enable = true}
         }
@@ -129,6 +131,7 @@ let
         })
 
         lspconfig.tsserver.setup({})
+        lspconfig.rust_analyzer.setup({})
 
         local sign = function(opts)
           vim.fn.sign_define(opts.name, {
@@ -243,13 +246,13 @@ let
         local null_ls = require("null-ls")
 
         null_ls.setup({
-            sources = {
-                null_ls.builtins.code_actions.eslint,
-                null_ls.builtins.diagnostics.eslint,
-                null_ls.builtins.completion.spell,
-                null_ls.builtins.formatting.nixpkgs_fmt,
-                null_ls.builtins.formatting.prettier
-            },
+          sources = {
+            null_ls.builtins.code_actions.eslint,
+            null_ls.builtins.diagnostics.eslint,
+            null_ls.builtins.completion.spell,
+            null_ls.builtins.formatting.nixpkgs_fmt,
+            null_ls.builtins.formatting.prettier
+          },
         })
         EOF
       '';
