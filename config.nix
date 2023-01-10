@@ -168,9 +168,6 @@ let
 
         EOF
       '';
-      path = [
-        nodePackages.typescript-language-server
-      ];
     }
     {
       start = [ nvim-cmp cmp-buffer cmp-path cmp-nvim-lsp ];
