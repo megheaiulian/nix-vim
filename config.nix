@@ -248,7 +248,7 @@ let
             null_ls.builtins.diagnostics.eslint,
             null_ls.builtins.completion.spell,
             null_ls.builtins.formatting.nixpkgs_fmt,
-            null_ls.builtins.formatting.prettier
+            null_ls.builtins.formatting.prettier,
             null_ls.builtins.formatting.taplo
           },
         })
