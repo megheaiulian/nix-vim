@@ -13,5 +13,12 @@
     {
       inherit config lib call;
       defaultPackage = forAllSystems (system: mkPackage (import nixpkgs { inherit system; }));
+      home = { pkgs, ... }: {
+        home.sessionVariables = rec {
+          VISUAL = "nvim";
+          EDITOR = VISUAL;
+        };
+        home.packages = [ (mkPackage pkgs) ];
+      };
     };
 }
