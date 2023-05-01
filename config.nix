@@ -122,8 +122,8 @@ let
             bufmap('n', 'gr', '<cmd>lua vim.lsp.buf.references()<cr>')
             bufmap('n', '<C-k>', '<cmd>lua vim.lsp.buf.signature_help()<cr>')
             bufmap('n', '<F2>', '<cmd>lua vim.lsp.buf.rename()<cr>')
-            bufmap('n', '<F4>', '<cmd>lua vim.lsp.buf.code_action()<cr>')
-            bufmap('x', '<F4>', '<cmd>lua vim.lsp.buf.range_code_action()<cr>')
+            bufmap('n', 'ga', '<cmd>lua vim.lsp.buf.code_action()<cr>')
+            bufmap('x', 'ga', '<cmd>lua vim.lsp.buf.range_code_action()<cr>')
             bufmap('n', 'gl', '<cmd>lua vim.diagnostic.open_float()<cr>')
             bufmap('n', '[d', '<cmd>lua vim.diagnostic.goto_prev()<cr>')
             bufmap('n', ']d', '<cmd>lua vim.diagnostic.goto_next()<cr>')
@@ -170,7 +170,7 @@ let
       '';
     }
     {
-      start = [ nvim-cmp cmp-buffer cmp-path cmp-nvim-lsp ];
+      start = [ nvim-cmp cmp-buffer cmp-path cmp-nvim-lsp luasnip cmp_luasnip ];
       config = ''
         lua << EOF
         vim.opt.completeopt = {'menu', 'menuone', 'noselect'}
@@ -178,10 +178,16 @@ let
         local select_opts = {behavior = cmp.SelectBehavior.Select}
 
         cmp.setup({
+          snippet = {
+            expand = function(args)
+              require'luasnip'.lsp_expand(args.body)
+            end
+          },
           sources = {
             {name = 'path'},
             {name = 'nvim_lsp', keyword_length = 3},
             {name = 'buffer', keyword_length = 3},
+            {name = 'luasnip' }
           },
           window = {
             documentation = cmp.config.window.bordered()
