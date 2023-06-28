@@ -1,5 +1,6 @@
 {
   description = "vim/neovim nix configuration";
+  inputs.nixpkgs.url = github:nixos/nixpkgs/nixos-unstable;
 
   outputs = { self, nixpkgs }:
     let
