@@ -70,7 +70,7 @@ let
         lua << EOF
         require'nvim-treesitter.configs'.setup {
           parser_install_dir = "~/.local/share/nvim/site",
-          ensure_installed = { 
+          ensure_installed = {
             'javascript', 'typescript', 'jsdoc', 'json', 'html', 'css', 'scss', 'bash', 'lua', 'nix', 'rust', 'toml'
           },
           highlight = {enable = true, additional_vim_regex_highlighting = false},
@@ -243,25 +243,50 @@ let
       '';
     }
     {
-      start = [ null-ls-nvim ];
+      start = [ formatter-nvim ];
       config = ''
         lua << EOF
-        local null_ls = require("null-ls")
-
-        null_ls.setup({
-          sources = {
-            null_ls.builtins.code_actions.eslint,
-            null_ls.builtins.diagnostics.eslint,
-            null_ls.builtins.completion.spell,
-            null_ls.builtins.formatting.nixpkgs_fmt,
-            null_ls.builtins.formatting.prettier,
-            null_ls.builtins.formatting.taplo
+        local formatter = require('formatter.filetypes')
+        require('formatter').setup({
+          filetype = {
+            lua = { formatter.lua.stylua },
+            javascript = { formatter.javascript.prettier },
+            typescript = { formatter.typescript.prettier },
+            html = { formatter.javascript.prettier },
+            css = { formatter.css.prettier },
+            yaml = { formatter.yaml.prettier },
+            markdown = { formatter.markdown.prettier },
+            json = { formatter.json.jq },
+            jsonc = { formatter.json.jq },
+            nix = { formatter.nix.nixpkgs_fmt },
+            rust = { formatter.rust.rustfmt },
+            ['*'] = {
+              require('formatter.filetypes.any').remove_trailing_whitespace,
+            },
           },
         })
+        vim.keymap.set('n', 'Q', ':FormatWrite<cr>')
         EOF
       '';
       path = [ nixpkgs-fmt ];
+    }
+    {
+      start = [ nvim-lint ];
+      config = ''
+        lua << EOF
+        require('lint').linters_by_ft = {
+          lua = { 'luacheck' },
+          nix = { 'statix' },
+          javascript = { 'eslint' },
+          yaml = { 'yamllint' },
+          json = { 'jsonlint' },
+        }
 
+        vim.api.nvim_create_autocmd({ 'BufWritePost', 'InsertLeave', 'TextChanged' }, {
+          command = 'silent! lua require("lint").try_lint()',
+        })
+        EOF
+      '';
     }
 
   ];
