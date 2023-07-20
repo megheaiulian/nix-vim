@@ -247,13 +247,15 @@ let
       config = ''
         lua << EOF
         local formatter = require('formatter.filetypes')
+        local defaults = require "formatter.defaults"
+        local util = require "formatter.util"
         require('formatter').setup({
           filetype = {
             lua = { formatter.lua.stylua },
             javascript = { formatter.javascript.prettier },
             typescript = { formatter.typescript.prettier },
             html = { formatter.javascript.prettier },
-            astro = { formatter.javascript.astro },
+            astro = { util.copyf(defaults.prettier) },
             css = { formatter.css.prettier },
             yaml = { formatter.yaml.prettier },
             markdown = { formatter.markdown.prettier },
