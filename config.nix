@@ -71,7 +71,7 @@ let
         require'nvim-treesitter.configs'.setup {
           parser_install_dir = "~/.local/share/nvim/site",
           ensure_installed = {
-            'javascript', 'typescript', 'jsdoc', 'json', 'html', 'css', 'scss', 'bash', 'lua', 'nix', 'rust', 'toml', 'astro'
+            'javascript', 'typescript', 'jsdoc', 'json', 'html', 'css', 'scss', 'bash', 'lua', 'nix', 'rust', 'toml', 'astro', 'twig'
           },
           highlight = {enable = true, additional_vim_regex_highlighting = false},
           indent = {enable = true}
@@ -256,6 +256,7 @@ let
             typescript = { formatter.typescript.prettier },
             html = { formatter.javascript.prettier },
             astro = { util.copyf(defaults.prettier) },
+            twig = { util.copyf(default.prettier) },
             css = { formatter.css.prettier },
             yaml = { formatter.yaml.prettier },
             markdown = { formatter.markdown.prettier },
