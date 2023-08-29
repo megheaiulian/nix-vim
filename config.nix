@@ -256,7 +256,7 @@ let
             typescript = { formatter.typescript.prettier },
             html = { formatter.javascript.prettier },
             astro = { util.copyf(defaults.prettier) },
-            twig = { util.copyf(default.prettier) },
+            twig = { util.copyf(defaults.prettier) },
             css = { formatter.css.prettier },
             yaml = { formatter.yaml.prettier },
             markdown = { formatter.markdown.prettier },
