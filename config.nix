@@ -71,7 +71,7 @@ let
         require'nvim-treesitter.configs'.setup {
           parser_install_dir = "~/.local/share/nvim/site",
           ensure_installed = {
-            'javascript', 'typescript', 'jsdoc', 'json', 'html', 'css', 'scss', 'bash', 'lua', 'nix', 'rust', 'toml', 'astro', 'twig'
+            'javascript', 'typescript', 'jsdoc', 'json', 'html', 'css', 'scss', 'bash', 'lua', 'nix', 'rust', 'toml', 'astro', 'twig', 'go'
           },
           highlight = {enable = true, additional_vim_regex_highlighting = false},
           indent = {enable = true}
@@ -132,6 +132,7 @@ let
 
         lspconfig.tsserver.setup({})
         lspconfig.rust_analyzer.setup({})
+        lspconfig.gopls.setup({})
 
         local sign = function(opts)
           vim.fn.sign_define(opts.name, {
@@ -264,6 +265,7 @@ let
             jsonc = { formatter.json.jq },
             nix = { formatter.nix.nixpkgs_fmt },
             rust = { formatter.rust.rustfmt },
+            go = { formatter.go.gofmt },
             ['*'] = {
               require('formatter.filetypes.any').remove_trailing_whitespace,
             },
