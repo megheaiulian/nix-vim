@@ -286,6 +286,7 @@ let
           javascript = { 'eslint' },
           yaml = { 'yamllint' },
           json = { 'jsonlint' },
+          go = { 'golangci-lint' },
         }
 
         vim.api.nvim_create_autocmd({ 'BufWritePost', 'InsertLeave', 'TextChanged' }, {
