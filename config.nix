@@ -71,7 +71,21 @@ let
         require'nvim-treesitter.configs'.setup {
           parser_install_dir = "~/.local/share/nvim/site",
           ensure_installed = {
-            'javascript', 'typescript', 'jsdoc', 'json', 'html', 'css', 'scss', 'bash', 'lua', 'nix', 'rust', 'toml', 'astro', 'twig', 'go'
+            'javascript',
+            'typescript',
+            'jsdoc',
+            'json',
+            'html',
+            'css',
+            'scss',
+            'bash',
+            'lua',
+            'nix',
+            'rust',
+            'toml',
+            'astro',
+            'twig',
+            'go'
           },
           highlight = {enable = true, additional_vim_regex_highlighting = false},
           indent = {enable = true}
@@ -94,7 +108,7 @@ let
       '';
     }
     {
-      start = nvim-lspconfig;
+      start = [nvim-lspconfig omnisharp-extended-lsp-nvim];
       config = ''
         lua << EOF
         local lspconfig = require('lspconfig')
@@ -133,6 +147,12 @@ let
         lspconfig.tsserver.setup({})
         lspconfig.rust_analyzer.setup({})
         lspconfig.gopls.setup({})
+        lspconfig.omnisharp.setup({
+          cmd = { "OmniSharp" },
+          handlers = {
+            ["textDocument/definition"] = require('omnisharp_extended').handler,
+          },
+        })
 
         local sign = function(opts)
           vim.fn.sign_define(opts.name, {
