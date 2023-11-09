@@ -85,7 +85,9 @@ let
             'toml',
             'astro',
             'twig',
-            'go'
+            'go',
+            'c_sharp',
+            'sql'
           },
           highlight = {enable = true, additional_vim_regex_highlighting = false},
           indent = {enable = true}
@@ -108,7 +110,7 @@ let
       '';
     }
     {
-      start = [nvim-lspconfig omnisharp-extended-lsp-nvim];
+      start = [ nvim-lspconfig omnisharp-extended-lsp-nvim ];
       config = ''
         lua << EOF
         local lspconfig = require('lspconfig')
