@@ -64,6 +64,7 @@ let
     {
       opt = plenary-nvim;
     }
+    { opt = vim-fugitive; }
     {
       start = nvim-treesitter;
       config = ''
