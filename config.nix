@@ -64,7 +64,12 @@ let
     {
       opt = plenary-nvim;
     }
-    { opt = vim-fugitive; }
+    {
+      opt = vim-fugitive;
+      config = ''
+        autocmd vimRc BufReadPre * execute 'packadd vim-fugitive'
+      '';
+    }
     {
       start = nvim-treesitter;
       config = ''
