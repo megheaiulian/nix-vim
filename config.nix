@@ -71,29 +71,27 @@ let
       '';
     }
     {
-      start = nvim-treesitter;
+      start = nvim-treesitter.withPlugins (p: with p;[
+        javascript
+        typescript
+        jsdoc
+        json
+        html
+        css
+        scss
+        bash
+        lua
+        nix
+        rust
+        toml
+        twig
+        go
+        c_sharp
+        sql
+      ]);
       config = ''
         lua << EOF
         require'nvim-treesitter.configs'.setup {
-          parser_install_dir = "~/.local/share/nvim/site",
-          ensure_installed = {
-            'javascript',
-            'typescript',
-            'jsdoc',
-            'json',
-            'html',
-            'css',
-            'scss',
-            'bash',
-            'lua',
-            'nix',
-            'rust',
-            'toml',
-            'twig',
-            'go',
-            'c_sharp',
-            'sql'
-          },
           highlight = {enable = true, additional_vim_regex_highlighting = false},
           indent = {enable = true}
         }
