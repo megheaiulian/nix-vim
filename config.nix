@@ -42,13 +42,6 @@ let
   '';
   plugins = with vimPlugins; [
     {
-      opt = editorconfig-vim;
-      config = ''
-        autocmd vimRc BufReadPre * execute 'packadd editorconfig-vim'
-        let g:EditorConfig_exclude_patterns = ['fugitive://.*']
-      '';
-    }
-    {
       start = fzf-vim;
       config = ''
         let $FZF_DEFAULT_COMMAND='fd --type f --hidden --follow --exclude .git'
@@ -71,24 +64,28 @@ let
       '';
     }
     {
-      start = nvim-treesitter.withPlugins (p: with p;[
-        javascript
-        typescript
-        jsdoc
-        json
-        html
-        css
-        scss
-        bash
-        lua
-        nix
-        rust
-        toml
-        twig
-        go
-        c_sharp
-        sql
-      ]);
+      start = [
+        (nvim-treesitter.withPlugins (p: with p;[
+          javascript
+          typescript
+          jsdoc
+          json
+          html
+          css
+          scss
+          bash
+          lua
+          nix
+          rust
+          toml
+          twig
+          go
+          c_sharp
+          sql
+          ledger
+        ]))
+        vim-ledger
+      ];
       config = ''
         lua << EOF
         require'nvim-treesitter.configs'.setup {
