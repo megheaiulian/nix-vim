@@ -288,6 +288,7 @@ let
             nix = { formatter.nix.nixpkgs_fmt },
             rust = { formatter.rust.rustfmt },
             go = { formatter.go.gofmt },
+            xml = { formatter.xml.xmlformat },
             ['*'] = {
               require('formatter.filetypes.any').remove_trailing_whitespace,
             },
@@ -296,7 +297,7 @@ let
         vim.keymap.set('n', 'Q', ':FormatWrite<cr>')
         EOF
       '';
-      path = [ nixpkgs-fmt ];
+      path = [ nixpkgs-fmt xmlformat ];
     }
     {
       start = [ nvim-lint ];
