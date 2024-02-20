@@ -297,7 +297,7 @@ let
         vim.keymap.set('n', 'Q', ':FormatWrite<cr>')
         EOF
       '';
-      path = [ nixpkgs-fmt xmlformat ];
+      path = [ nixpkgs-fmt ];
     }
     {
       start = [ nvim-lint ];
