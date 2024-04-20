@@ -11,7 +11,7 @@
       mkPackage = pkgs: call lib.mkNeovim pkgs (call config pkgs);
     in
     {
-      inherit config lib call;
+      inherit config lib call mkPackage;
       defaultPackage = forAllSystems (system: mkPackage (import nixpkgs { inherit system; }));
       home = { pkgs, ... }: {
         home.sessionVariables = rec {
