@@ -6,11 +6,11 @@ let
     };
     customRC = customRC + "\n" + builtins.concatStringsSep "\n" (map (i: i.config or "") plugins);
   };
-  mkNeovim' = neovim: cfg: neovim.override { 
-    configure = mkNeovimCfg cfg; 
-    viAlias = true; 
-    vimAlias = true; 
-    };
+  mkNeovim' = neovim: cfg: neovim.override {
+    configure = mkNeovimCfg cfg;
+    viAlias = true;
+    vimAlias = true;
+  };
   mkNeovim = { neovim, lib, symlinkJoin, makeWrapper }: { customRC, plugins }: symlinkJoin {
     name = "nvim";
     paths = [ (mkNeovim' neovim { inherit customRC plugins; }) ];
