@@ -20,7 +20,7 @@
         };
         home.packages = [ (mkPackage pkgs) ];
       };
-      nixosModules.default = { pgks, ... }: {
+      nixosModules.default = { pkgs, ... }: {
         environment.variables.EDITOR = "neovim";
         environment.systemPackages = [ (mkPackage pkgs) ];
       };
