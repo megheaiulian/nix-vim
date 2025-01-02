@@ -21,7 +21,7 @@
         home.packages = [ (mkPackage pkgs) ];
       };
       nixosModules.default = { pkgs, ... }: {
-        environment.variables.EDITOR = "neovim";
+        environment.variables.EDITOR = "nvim";
         environment.systemPackages = [ (mkPackage pkgs) ];
       };
     };
