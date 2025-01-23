@@ -83,6 +83,7 @@ let
           c_sharp
           sql
           ledger
+          hcl
         ]))
         vim-ledger
       ];
