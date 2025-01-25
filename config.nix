@@ -156,6 +156,8 @@ let
             ["textDocument/definition"] = require('omnisharp_extended').handler,
           },
         })
+        lspconfig.terraformls.setup{}
+        lspconfig.tflint.setup{}
 
         local sign = function(opts)
           vim.fn.sign_define(opts.name, {
