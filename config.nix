@@ -291,6 +291,7 @@ let
             nix = { formatter.nix.nixpkgs_fmt },
             rust = { formatter.rust.rustfmt },
             go = { formatter.go.gofmt },
+            terraform =  { formatter.terraform.terraformfmt },
             xml = { formatter.xml.xmlformat },
             ['*'] = {
               require('formatter.filetypes.any').remove_trailing_whitespace,
