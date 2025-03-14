@@ -84,6 +84,7 @@ let
           sql
           ledger
           hcl
+          php
         ]))
         vim-ledger
       ];
