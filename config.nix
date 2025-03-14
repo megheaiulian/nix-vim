@@ -159,6 +159,7 @@ let
         })
         lspconfig.terraformls.setup{}
         lspconfig.tflint.setup{}
+        lspconfig.phpactor.setup{}
 
         local sign = function(opts)
           vim.fn.sign_define(opts.name, {
