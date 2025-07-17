@@ -160,6 +160,7 @@ let
         lspconfig.terraformls.setup{}
         lspconfig.tflint.setup{}
         lspconfig.phpactor.setup{}
+        vim.lsp.enable('nixd')
 
         local sign = function(opts)
           vim.fn.sign_define(opts.name, {
