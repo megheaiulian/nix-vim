@@ -112,7 +112,7 @@ let
       '';
     }
     {
-      start = [ nvim-lspconfig omnisharp-extended-lsp-nvim ];
+      start = [ nvim-lspconfig ];
       config = ''
         lua << EOF
         local lspconfig = require('lspconfig')
@@ -148,18 +148,11 @@ let
           end
         })
 
-        lspconfig.ts_ls.setup({})
-        lspconfig.rust_analyzer.setup({})
-        lspconfig.gopls.setup({})
-        lspconfig.omnisharp.setup({
-          cmd = { "OmniSharp" },
-          handlers = {
-            ["textDocument/definition"] = require('omnisharp_extended').handler,
-          },
-        })
-        lspconfig.terraformls.setup{}
-        lspconfig.tflint.setup{}
-        lspconfig.phpactor.setup{}
+        vim.lsp.enable('ts_ls')
+        vim.lsp.enable('rust_analyzer')
+        vim.lsp.enable('gopls')
+        vim.lsp.enable('terraformls')
+        vim.lsp.enable('tflint')
         vim.lsp.enable('nixd')
 
         local sign = function(opts)
