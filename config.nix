@@ -192,6 +192,33 @@ let
       '';
     }
     {
+      start = [ supermaven-nvim ];
+      config = ''
+        lua << EOF
+
+        require("supermaven-nvim").setup({
+          keymaps = {
+            accept_suggestion = "<Tab>",
+            clear_suggestion = "<C-]>",
+            accept_word = "<C-j>",
+          },
+          ignore_filetypes = { cpp = true }, -- or { "cpp", }
+          color = {
+            suggestion_color = "#ffffff",
+            cterm = 244,
+          },
+          log_level = "info", -- set to "off" to disable logging completely
+          disable_inline_completion = false, -- disables inline completion for use with cmp
+          disable_keymaps = false, -- disables built in keymaps for more manual control
+          condition = function()
+            return false
+          end -- condition to check for stopping supermaven, `true` means to stop supermaven when the condition is true.
+        })
+        EOF
+      '';
+    }
+
+    {
       start = [ nvim-cmp cmp-buffer cmp-path cmp-nvim-lsp luasnip cmp_luasnip ];
       config = ''
         lua << EOF
@@ -209,7 +236,8 @@ let
             {name = 'path'},
             {name = 'nvim_lsp', keyword_length = 3},
             {name = 'buffer', keyword_length = 3},
-            {name = 'luasnip' }
+            {name = 'luasnip' },
+            {name = "supermaven" },
           },
           window = {
             documentation = cmp.config.window.bordered()
@@ -318,6 +346,7 @@ let
         EOF
       '';
     }
+
 
   ];
 in
