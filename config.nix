@@ -1,327 +1,342 @@
-{ vimPlugins, nixpkgs-fmt, silver-searcher, ripgrep, nodePackages }:
+{
+  vimPlugins,
+  nixfmt-rfc-style,
+  ripgrep,
+  fd,
+}:
 let
-  customRC = ''
-    set encoding=utf-8
-    scriptencoding utf-8
+  toLua = str: "lua << EOF\n${str}\nEOF";
+  customRC =
+    toLua
+      # lua
+      ''
+        vim.loader.enable()
 
-    augroup vimRc
-      autocmd!
-    augroup END
+        local opt, g = vim.opt, vim.g
+        local vimRc = vim.api.nvim_create_augroup('vimRc', { clear = true })
+        local autocmd = vim.api.nvim_create_autocmd
 
-    set path& | let &path .= '**'
-    set copyindent
-    set preserveindent
-    set expandtab
-    set smarttab
-    set softtabstop=2
-    set tabstop=2
-    set shiftwidth=2
-    set shiftround
-    set number
-    set switchbuf+=useopen,usetab
-    set splitbelow
-    set splitright
-    set nowrap
-    set mouse=a
-    set completeopt-=preview
-    set completeopt+=menuone,noselect,noinsert
-    set complete=.,w,b,u,U,t,i,d,k
-    set wildmode=longest:full,full
-    set wildignorecase
-    set wildcharm=<C-Z>
+        g.mapleader = ' '
+        g.maplocalleader = ' '
+        g.have_nerd_font = true
+        g.netrw_banner = 0
+        g.netrw_localcopydircmd = 'cp -r'
+        g.netrw_localrmdir = 'rm -r'
+        g.netrw_use_errorwindow = 0
 
-    set list
-    set listchars=tab:›\ ,trail:•,extends:»,precedes:«,nbsp:‡
+        opt.path = '.,**'
+        opt.swapfile = false
+        opt.expandtab = true
+        opt.smarttab = true
+        opt.softtabstop = 2
+        opt.tabstop = 2
+        opt.shiftwidth = 2
+        opt.shiftround = true
+        opt.number = true
+        opt.signcolumn = 'yes'
+        opt.splitbelow = true
+        opt.splitright = true
+        opt.splitkeep = 'screen'
+        opt.pumheight = 5
+        opt.gdefault = true
+        opt.wrap = false
+        opt.completeopt = 'menuone,noselect,noinsert'
+        opt.wildmode = 'longest:full,full'
+        opt.diffopt = 'internal,filler,closeoff,context:3,indent-heuristic,algorithm:patience,linematch:60'
+        opt.undofile = true
+        opt.timeoutlen = 1500
+        opt.updatetime = 300
+        opt.grepprg = 'rg --color=never --vimgrep'
+        opt.grepformat = '%f:%l:%c:%m,%f'
+        opt.list = true
+        opt.listchars = { tab = '› ', trail = '⋅', extends = '»', precedes = '«', nbsp = '␣' }
+        opt.winborder = 'single'
 
-    " statusline
-    set statusline=%<%f\ %h%#error#%m%*%r%=%-14.(%l\:%c%)%{&filetype}
-
-    " njk support
-    au BufNewFile,BufRead *.njk set ft=html
-
-  '';
-  plugins = with vimPlugins; [
-    {
-      start = fzf-vim;
-      config = ''
-        let $FZF_DEFAULT_COMMAND='fd --type f --hidden --follow --exclude .git'
-        let g:fzf_layout = { 'down': '~25%' }
-        nnoremap <c-p> :Files<cr>
-        nnoremap <bs> :Buffers<cr>
-      '';
-      path = [ silver-searcher ripgrep ];
-    }
-    {
-      start = commentary;
-    }
-    {
-      opt = plenary-nvim;
-    }
-    {
-      opt = vim-fugitive;
-      config = ''
-        autocmd vimRc BufReadPre * execute 'packadd vim-fugitive'
-      '';
-    }
-    {
-      start = [
-        (nvim-treesitter.withPlugins (p: with p;[
-          javascript
-          typescript
-          jsdoc
-          json
-          html
-          css
-          scss
-          bash
-          lua
-          nix
-          rust
-          toml
-          twig
-          go
-          c_sharp
-          sql
-          ledger
-          hcl
-          php
-        ]))
-        vim-ledger
-      ];
-      config = ''
-        lua << EOF
-        require'nvim-treesitter.configs'.setup {
-          highlight = {enable = true, additional_vim_regex_highlighting = false},
-          indent = {enable = true}
-        }
-        EOF
-      '';
-    }
-    {
-      start = kanagawa-nvim;
-      config = ''
-        colorscheme kanagawa
-      '';
-    }
-    {
-      start = gitsigns-nvim;
-      config = ''
-        lua << EOF
-          require('gitsigns').setup()
-        EOF
-      '';
-    }
-    {
-      start = [ nvim-lspconfig ];
-      config = ''
-        lua << EOF
-        local lspconfig = require('lspconfig')
-        local lsp_defaults = lspconfig.util.default_config
-
-        lsp_defaults.capabilities = vim.tbl_deep_extend(
-          'force',
-          lsp_defaults.capabilities,
-          require('cmp_nvim_lsp').default_capabilities()
-        )
-        vim.api.nvim_create_autocmd('LspAttach', {
-          desc = 'LSP actions',
-          callback = function()
-            local bufmap = function(mode, lhs, rhs)
-              local opts = {buffer = true}
-              vim.keymap.set(mode, lhs, rhs, opts)
-            end
-
-            bufmap('n', 'K', '<cmd>lua vim.lsp.buf.hover()<cr>')
-            bufmap('n', 'gd', '<cmd>lua vim.lsp.buf.definition()<cr>')
-            bufmap('n', 'gD', '<cmd>lua vim.lsp.buf.declaration()<cr>')
-            bufmap('n', 'gi', '<cmd>lua vim.lsp.buf.implementation()<cr>')
-            bufmap('n', 'gf', '<cmd>lua vim.lsp.buf.format()<cr>')
-            bufmap('n', 'go', '<cmd>lua vim.lsp.buf.type_definition()<cr>')
-            bufmap('n', 'gr', '<cmd>lua vim.lsp.buf.references()<cr>')
-            bufmap('n', '<C-k>', '<cmd>lua vim.lsp.buf.signature_help()<cr>')
-            bufmap('n', '<F2>', '<cmd>lua vim.lsp.buf.rename()<cr>')
-            bufmap('n', 'ga', '<cmd>lua vim.lsp.buf.code_action()<cr>')
-            bufmap('x', 'ga', '<cmd>lua vim.lsp.buf.range_code_action()<cr>')
-            bufmap('n', 'gl', '<cmd>lua vim.diagnostic.open_float()<cr>')
-            bufmap('n', '[d', '<cmd>lua vim.diagnostic.goto_prev()<cr>')
-            bufmap('n', ']d', '<cmd>lua vim.diagnostic.goto_next()<cr>')
-          end
+        autocmd('BufRead', { pattern = '*', group = vimRc, command = [[call setpos(".", getpos("'\""))]] })
+        autocmd('TextYankPost', {
+          pattern = '*',
+            callback = function()
+              vim.highlight.on_yank { higroup = 'CursorLine', timeout = 200 }
+            end,
         })
+        vim.cmd('command! -nargs=* -complete=file -complete=dir Rg silent grep! <args>')
 
-        vim.lsp.enable('ts_ls')
-        vim.lsp.enable('rust_analyzer')
-        vim.lsp.enable('gopls')
-        vim.lsp.enable('terraformls')
-        vim.lsp.enable('tflint')
-        vim.lsp.enable('nixd')
-
-        local sign = function(opts)
-          vim.fn.sign_define(opts.name, {
-            texthl = opts.name,
-            text = opts.text,
-            numhl = ""
-          })
-        end
-        sign({name = 'DiagnosticSignError', text = '✘'})
-        sign({name = 'DiagnosticSignWarn', text = '▲'})
-        sign({name = 'DiagnosticSignHint', text = '⚑'})
-        sign({name = 'DiagnosticSignInfo', text = ''})
+        vim.filetype.add({
+          extension = {
+            conf = 'config',
+            njk = 'html',
+          },
+          filename = {
+            ['.envrc'] = 'config',
+          },
+        })
 
         vim.diagnostic.config({
-          virtual_text = false,
-          severity_sort = true,
+          underline = false,
           float = {
-            border = 'rounded',
-            source = 'always',
-            header = "",
-            prefix = "",
+            border = 'single',
+            header = ''',
+            source = true,
           },
-        })
-
-        vim.lsp.handlers['textDocument/hover'] = vim.lsp.with(
-          vim.lsp.handlers.hover,
-          {border = 'rounded'}
-        )
-
-        vim.lsp.handlers['textDocument/signatureHelp'] = vim.lsp.with(
-          vim.lsp.handlers.signature_help,
-          {border = 'rounded'}
-        )
-
-        EOF
-      '';
-    }
-
-    {
-      start = [ nvim-cmp cmp-buffer cmp-path cmp-nvim-lsp luasnip cmp_luasnip ];
-      config = ''
-        lua << EOF
-        vim.opt.completeopt = {'menu', 'menuone', 'noselect'}
-        local cmp = require('cmp')
-        local select_opts = {behavior = cmp.SelectBehavior.Select}
-
-        cmp.setup({
-          snippet = {
-            expand = function(args)
-              require'luasnip'.lsp_expand(args.body)
-            end
-          },
-          sources = {
-            {name = 'path'},
-            {name = 'nvim_lsp', keyword_length = 3},
-            {name = 'buffer', keyword_length = 3},
-            {name = 'luasnip' },
-            {name = "supermaven" },
-          },
-          window = {
-            documentation = cmp.config.window.bordered()
-          },
-          formatting = {
-            fields = {'menu', 'abbr', 'kind'},
-            format = function(entry, item)
-              local menu_icon = {
-                nvim_lsp = 'λ',
-                buffer = 'Ω',
-                path = '🖫',
-              }
-
-              item.menu = menu_icon[entry.source.name]
-              return item
-            end,
-          },
-          mapping = {
-            ['<Up>'] = cmp.mapping.select_prev_item(select_opts),
-            ['<Down>'] = cmp.mapping.select_next_item(select_opts),
-
-            ['<C-p>'] = cmp.mapping.select_prev_item(select_opts),
-            ['<C-n>'] = cmp.mapping.select_next_item(select_opts),
-
-            ['<C-u>'] = cmp.mapping.scroll_docs(-4),
-            ['<C-f>'] = cmp.mapping.scroll_docs(4),
-
-            ['<C-e>'] = cmp.mapping.abort(),
-            ['<CR>'] = cmp.mapping.confirm({select = false}),
-
-            ['<Tab>'] = cmp.mapping(function(fallback)
-              local col = vim.fn.col('.') - 1
-
-              if cmp.visible() then
-                cmp.select_next_item(select_opts)
-              elseif col == 0 or vim.fn.getline('.'):sub(col, col):match('%s') then
-                fallback()
-              else
-                cmp.complete()
-              end
-            end, {'i', 's'}),
-
-            ['<S-Tab>'] = cmp.mapping(function(fallback)
-              if cmp.visible() then
-                cmp.select_prev_item(select_opts)
-              else
-                fallback()
-              end
-            end, {'i', 's'}),
-          },
-        })
-        EOF
-      '';
-    }
-    {
-      start = [ formatter-nvim ];
-      config = ''
-        lua << EOF
-        local formatter = require('formatter.filetypes')
-        local defaults = require "formatter.defaults"
-        local util = require "formatter.util"
-        require('formatter').setup({
-          filetype = {
-            lua = { formatter.lua.stylua },
-            javascript = { formatter.javascript.prettier },
-            typescript = { formatter.typescript.prettier },
-            html = { formatter.javascript.prettier },
-            liquid = { util.copyf(defaults.prettier) },
-            twig = { util.copyf(defaults.prettier) },
-            css = { formatter.css.prettier },
-            yaml = { formatter.yaml.prettier },
-            markdown = { formatter.markdown.prettier },
-            json = { formatter.json.jq },
-            jsonc = { formatter.json.jq },
-            nix = { formatter.nix.nixpkgs_fmt },
-            rust = { formatter.rust.rustfmt },
-            go = { formatter.go.gofmt },
-            terraform =  { formatter.terraform.terraformfmt },
-            xml = { formatter.xml.xmlformat },
-            ['*'] = {
-              require('formatter.filetypes.any').remove_trailing_whitespace,
+          signs = {
+            text = {
+              [vim.diagnostic.severity.HINT] = '󰌶',
+              [vim.diagnostic.severity.ERROR] = '󰅚',
+              [vim.diagnostic.severity.INFO] = '󰋽',
+              [vim.diagnostic.severity.WARN] = '󰀪',
             },
           },
         })
-        vim.keymap.set('n', 'Q', ':FormatWrite<cr>')
-        EOF
+
       '';
-      path = [ nixpkgs-fmt ];
+  plugins = with vimPlugins; [
+    {
+      start = [
+        fzf-lua
+        lualine-nvim
+        nvim-web-devicons
+      ];
+      config =
+        toLua
+          # lua
+          ''
+            require("lualine").setup({
+              sections = {
+                lualine_a = { '%{mode()}'},
+                lualine_b = { 'branch', 'diagnostics' },
+                lualine_c = {{ 'filename', path = 4 }},
+                lualine_x = { 'filetype'}
+              }
+            })
+            require("fzf-lua").setup({ "ivy", winopts = { height = 0.25 }})
+            vim.keymap.set('n', '<c-p>', '<cmd>lua require("fzf-lua").files({ cmd = "fd -tf -tl -H -E=.git -E=node_modules"})<cr>')
+            vim.keymap.set('n', '<bs>', ':FzfLua buffers<cr>')
+            vim.keymap.set('n', '<leader>g', '<cmd>lua require("fzf-lua").live_grep_native()<cr>')
+          '';
+      path = [
+        fd
+        ripgrep
+      ];
+    }
+    {
+      start = [
+        (nvim-treesitter.withPlugins (
+          p: with p; [
+            astro
+            javascript
+            typescript
+            tsx
+            jsdoc
+            json
+            html
+            http
+            css
+            scss
+            styled
+            bash
+            lua
+            nix
+            rust
+            toml
+            twig
+            go
+            c_sharp
+            cpp
+            sql
+            ledger
+            hcl
+            php
+            markdown
+            markdown_inline
+            yaml
+            helm
+            terraform
+            regex
+            diff
+          ]
+        ))
+        vim-ledger
+      ];
+      config =
+        toLua
+          # lua
+          ''
+            require'nvim-treesitter.configs'.setup {
+              highlight = {enable = true, additional_vim_regex_highlighting = false},
+              indent = {enable = true}
+            }
+          '';
+    }
+    {
+      start = kanagawa-nvim;
+      config =
+        toLua
+          # lua
+          ''
+            vim.cmd('colorscheme kanagawa')
+          '';
+    }
+    {
+      start = [
+        gitsigns-nvim
+        vim-fugitive
+      ];
+      config =
+        toLua
+          # lua
+          ''
+            require('gitsigns').setup({
+              signs = {
+                add = { text = '┊' },
+                change = { text = '┊' },
+                delete = { text = '_' },
+                topdelete = { text = '‾' },
+                changedelete = { text = '┊' },
+                untracked = { text = '┆' },
+              },
+              signs_staged_enable = false,
+              on_attach = function()
+                local gs = package.loaded.gitsigns
+                local map = vim.keymap.set
+                map('n', '[c', gs.prev_hunk, { buffer = true })
+                map('n', ']c', gs.next_hunk, { buffer = true })
+                map('n', 'ghr', gs.reset_hunk)
+                map('n', 'ghp', gs.preview_hunk)
+                map('n', 'ghi', gs.preview_hunk_inline)
+                map('n', 'ghB', function()
+                  gs.blame_line({ full = true })
+                end)
+                map('n', 'ghb', gs.toggle_current_line_blame)
+              end,
+            })
+          '';
+    }
+    {
+      start = [ nvim-lspconfig ];
+      config =
+        toLua
+          # lua
+          ''
+            vim.lsp.enable('ts_ls')
+            vim.lsp.enable('rust_analyzer')
+            vim.lsp.enable('gopls')
+            vim.lsp.enable('terraformls')
+            vim.lsp.enable('tflint')
+            vim.lsp.enable('nixd')
+
+            vim.keymap.set('n', 'gl', vim.diagnostic.open_float)
+            vim.keymap.set('n', 'gd', vim.lsp.buf.definition)
+            vim.keymap.set('n', 'go', vim.lsp.buf.type_definition)
+            vim.keymap.set('n', 'gD', vim.lsp.buf.declaration)
+            vim.keymap.set('n', '<leader>d', vim.diagnostic.setqflist)
+            vim.keymap.set('n', '<c-k>', vim.lsp.buf.signature_help)
+          '';
+    }
+
+    {
+      start = [ blink-cmp ];
+      config =
+        toLua
+          # lua
+          ''
+            require('blink.cmp').setup({
+              cmdline = { enabled = false },
+              appearance = { nerd_font_variant = 'normal' },
+              sources = { default = { 'lsp', 'buffer', 'snippets', 'path' } },
+              completion = {
+                list = {
+                  selection = { preselect = true, auto_insert = false },
+                },
+              },
+              keymap = {
+                preset = 'enter',
+                  ['<Tab>'] = { 'snippet_forward', 'select_next', 'fallback' },
+                  ['<S-Tab>'] = { 'snippet_backward', 'select_prev', 'fallback' },
+                  ['<C-k>'] = { 'show', 'show_documentation', 'hide_documentation' },
+              }
+            })
+          '';
+    }
+    {
+      start = [ formatter-nvim ];
+      config =
+        toLua
+          # lua
+          ''
+            local formatter = require('formatter.filetypes')
+            local defaults = require "formatter.defaults"
+            local util = require "formatter.util"
+            require('formatter').setup({
+              filetype = {
+                lua = { formatter.lua.stylua },
+                javascript = { formatter.javascript.prettier },
+                typescript = { formatter.typescript.prettier },
+                html = { formatter.javascript.prettier },
+                liquid = { util.copyf(defaults.prettier) },
+                twig = { util.copyf(defaults.prettier) },
+                css = { formatter.css.prettier },
+                yaml = { formatter.yaml.prettier },
+                markdown = { formatter.markdown.prettier },
+                json = { formatter.json.jq },
+                jsonc = { formatter.json.jq },
+                nix = { formatter.nix.nixfmt },
+                rust = { formatter.rust.rustfmt },
+                go = { formatter.go.gofmt },
+                terraform =  { formatter.terraform.terraformfmt },
+                xml = { formatter.xml.xmlformat },
+                ['*'] = {
+                  require('formatter.filetypes.any').remove_trailing_whitespace,
+                },
+              },
+            })
+            vim.keymap.set('n', 'Q', ':FormatWrite<cr>')
+          '';
+      path = [ nixfmt-rfc-style ];
     }
     {
       start = [ nvim-lint ];
-      config = ''
-        lua << EOF
-        require('lint').linters_by_ft = {
-          lua = { 'luacheck' },
-          nix = { 'statix' },
-          javascript = { 'eslint' },
-          yaml = { 'yamllint' },
-          json = { 'jsonlint' },
-          go = { 'golangci-lint' },
-        }
+      config =
+        toLua
+          # lua
+          ''
+            require('lint').linters_by_ft = {
+              lua = { 'luacheck' },
+              nix = { 'statix' },
+              javascript = { 'eslint' },
+              yaml = { 'yamllint' },
+              json = { 'jsonlint' },
+              go = { 'golangci-lint' },
+            }
 
-        vim.api.nvim_create_autocmd({ 'BufWritePost', 'InsertLeave', 'TextChanged' }, {
-          command = 'silent! lua require("lint").try_lint()',
-        })
-        EOF
-      '';
+            vim.api.nvim_create_autocmd({ 'BufWritePost', 'InsertLeave', 'TextChanged' }, {
+              callback = function()
+                require("lint").try_lint()
+              end,
+            })
+          '';
     }
-
-
+    {
+      start = [ quicker-nvim ];
+      config =
+        toLua
+          # lua
+          ''
+            require('quicker').setup({
+              on_qf = function(bufnr)
+                vim.keymap.set('n', 'q', function()
+                  require('quicker').close()
+                end, { buffer = bufnr })
+              end,
+            })
+            vim.api.nvim_create_autocmd('QuickFixCmdPost', {
+              group = vimRc,
+              pattern = 'grep',
+              command = 'copen'
+            })
+          '';
+    }
   ];
 in
-{ inherit customRC plugins; }
+{
+  inherit customRC plugins;
+}
