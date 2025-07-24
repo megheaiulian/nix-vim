@@ -314,6 +314,7 @@ let
               end,
             })
           '';
+        path = [statix];
     }
     {
       start = [ quicker-nvim ];
