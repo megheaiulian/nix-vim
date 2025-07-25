@@ -314,7 +314,10 @@ let
               end,
             })
           '';
-        path = [statix];
+      path = [
+        statix
+        yamllint
+      ];
     }
     {
       start = [ quicker-nvim ];
