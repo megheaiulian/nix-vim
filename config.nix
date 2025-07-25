@@ -3,6 +3,8 @@
   nixfmt-rfc-style,
   ripgrep,
   fd,
+  statix,
+  yamllint
 }:
 let
   toLua = str: "lua << EOF\n${str}\nEOF";
