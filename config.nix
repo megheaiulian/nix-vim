@@ -4,7 +4,7 @@
   ripgrep,
   fd,
   statix,
-  yamllint
+  yamllint,
 }:
 let
   toLua = str: "lua << EOF\n${str}\nEOF";
@@ -42,6 +42,7 @@ let
         opt.pumheight = 5
         opt.gdefault = true
         opt.wrap = false
+        opt.showmode = false
         opt.completeopt = 'menuone,noselect,noinsert'
         opt.wildmode = 'longest:full,full'
         opt.diffopt = 'internal,filler,closeoff,context:3,indent-heuristic,algorithm:patience,linematch:60'
@@ -103,11 +104,20 @@ let
           # lua
           ''
             require("lualine").setup({
+
+              options = {
+                icons_enabled = true,
+                theme = 'auto',
+                component_separators = {},
+                section_separators = {},
+              },
               sections = {
-                lualine_a = { '%{mode()}'},
-                lualine_b = { 'branch', 'diagnostics' },
-                lualine_c = {{ 'filename', path = 4 }},
-                lualine_x = { 'filetype'}
+                lualine_a = {},
+                lualine_b = {'%* %{expand("%:p:h:t")}/%t %#error#%{&modified?" ":""}%r%*'},
+                lualine_c = { 'branch', 'diagnostics' },
+                lualine_x = { 'filetype' },
+                lualine_y = {'%*%4c:%l/%L'},
+                lualine_z = {}
               }
             })
             require("fzf-lua").setup({ "ivy", winopts = { height = 0.25 }})
@@ -301,7 +311,8 @@ let
         toLua
           # lua
           ''
-            require('lint').linters_by_ft = {
+            local lint = require('lint')
+            local linters_by_ft = {
               lua = { 'luacheck' },
               nix = { 'statix' },
               javascript = { 'eslint' },
@@ -309,7 +320,16 @@ let
               json = { 'jsonlint' },
               go = { 'golangci-lint' },
             }
-
+            local executable_linters = {}
+            for filetype, linters in pairs(linters_by_ft) do
+              for _, linter in ipairs(linters) do
+                if vim.fn.executable(linter) == 1 then
+                  executable_linters[filetype] = executable_linters[filetype] or {}
+                  table.insert(executable_linters[filetype], linter)
+                end
+              end
+            end
+            lint.linters_by_ft = executable_linters
             vim.api.nvim_create_autocmd({ 'BufWritePost', 'InsertLeave', 'TextChanged' }, {
               callback = function()
                 require("lint").try_lint()
