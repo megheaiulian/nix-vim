@@ -120,8 +120,8 @@ let
                 lualine_z = {}
               }
             })
-            require("fzf-lua").setup({ "ivy", winopts = { height = 0.25 }})
-            vim.keymap.set('n', '<c-p>', '<cmd>lua require("fzf-lua").files({ cmd = "fd -tf -tl -H -E=.git -E=node_modules"})<cr>')
+            require("fzf-lua").setup({ winopts = { split = "belowright 10new" }})
+            vim.keymap.set('n', '<c-p>', ':FzfLua files<cr>')
             vim.keymap.set('n', '<bs>', ':FzfLua buffers<cr>')
             vim.keymap.set('n', '<leader>g', '<cmd>lua require("fzf-lua").live_grep_native()<cr>')
           '';
@@ -255,10 +255,8 @@ let
               cmdline = { enabled = false },
               appearance = { nerd_font_variant = 'normal' },
               sources = { default = { 'lsp', 'buffer', 'snippets', 'path' } },
-              completion = {
-                list = {
-                  selection = { preselect = true, auto_insert = false },
-                },
+              completion = { list = { selection = { preselect = true, auto_insert = false }},
+              accept = { auto_brackets = { enabled = false }},
               },
               keymap = {
                 preset = 'enter',
