@@ -120,7 +120,13 @@ let
                 lualine_z = {}
               }
             })
-            require("fzf-lua").setup({ winopts = { split = "belowright 10new" }})
+            require("fzf-lua").setup({
+              winopts = {
+                row = 1,
+                height = 0.25,
+                width = 1
+              }
+            })
             vim.keymap.set('n', '<c-p>', ':FzfLua files<cr>')
             vim.keymap.set('n', '<bs>', ':FzfLua buffers<cr>')
             vim.keymap.set('n', '<leader>g', '<cmd>lua require("fzf-lua").live_grep_native()<cr>')
